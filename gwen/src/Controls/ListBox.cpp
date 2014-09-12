@@ -146,11 +146,12 @@ Gwen::String ListBox::GetSelectedRowName()
 
 void ListBox::Clear()
 {
-	UnselectAll();
+	//UnselectAll();
+    m_SelectedRows.clear();
 	m_Table->Clear();
 }
 
-void ListBox::SetSelectedRow( Gwen::Controls::Base* pControl, bool bClearOthers )
+void ListBox::SetSelectedRow( Gwen::Controls::Base* pControl, bool bClearOthers, bool doEvents )
 {
 	if ( bClearOthers )
 	{ UnselectAll(); }
@@ -162,12 +163,26 @@ void ListBox::SetSelectedRow( Gwen::Controls::Base* pControl, bool bClearOthers 
 	// TODO: make sure this is one of our rows!
 	pRow->SetSelected( true );
 	m_SelectedRows.push_back( pRow );
-	onRowSelected.Call( this );
+	
+    if (doEvents) { onRowSelected.Call( this ); }
 }
 
 
+void ListBox::RemoveSelectedRow(Gwen::Controls::Base* pControl)
+{
+    ListBoxRow* pRow = gwen_cast<ListBoxRow> (pControl);
 
-void ListBox::SelectByString( const TextObject & strName, bool bClearOthers )
+    if (!pRow) { return; }
+
+    pRow->SetSelected(false);
+    Rows::iterator i = std::find(m_SelectedRows.begin(), m_SelectedRows.end(), pRow);
+    if (i != m_SelectedRows.end())
+    {
+        m_SelectedRows.erase(i);
+    }
+}
+
+void ListBox::SelectByString( const TextObject & strName, bool bClearOthers, bool doEvents )
 {
 	if ( bClearOthers )
 	{ UnselectAll(); }
@@ -181,7 +196,7 @@ void ListBox::SelectByString( const TextObject & strName, bool bClearOthers )
 		if ( !pChild ) { continue; }
 
 		if ( Utility::Strings::Wildcard( strName, pChild->GetText( 0 ) ) )
-		{ SetSelectedRow( pChild, false ); }
+		{ SetSelectedRow( pChild, false, doEvents ); }
 	}
 }
 

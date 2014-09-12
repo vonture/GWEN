@@ -44,8 +44,9 @@ namespace Gwen
 				virtual Layout::TableRow* GetSelectedRow();
 				virtual Gwen::String GetSelectedRowName();
 
-				virtual void SetSelectedRow( Gwen::Controls::Base* pRow, bool bClearOthers = true );
-				virtual void SelectByString( const TextObject & string, bool bClearOthers = true );
+                virtual void SetSelectedRow(Gwen::Controls::Base* pRow, bool bClearOthers = true, bool doEvents = true);
+                virtual void RemoveSelectedRow(Gwen::Controls::Base* pRow);
+				virtual void SelectByString( const TextObject & string, bool bClearOthers = true, bool doEvents = true );
 
 				Gwen::Event::Caller	onRowSelected;
 
