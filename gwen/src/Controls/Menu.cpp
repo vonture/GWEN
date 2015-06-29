@@ -145,7 +145,11 @@ void Menu::Open( unsigned int iPos )
 	SetHidden( false );
 	BringToFront();
 	Gwen::Point MousePos = Input::GetMousePosition();
-	SetPos( MousePos.x, MousePos.y );
+
+    Gwen::Point menuSize = GetSize();
+    Gwen::Point canvasSize = GetCanvas()->GetSize();
+
+	SetPos( std::min(MousePos.x, canvasSize.x - menuSize.x), std::min(MousePos.y, canvasSize.y - menuSize.y) );
 }
 
 void Menu::Close()
