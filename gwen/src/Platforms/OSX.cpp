@@ -1,15 +1,9 @@
-/*
-	GWEN
-	Copyright (c) 2012 Facepunch Studios
-	See license in Gwen.h
-*/
+#ifdef __APPLE__
 
 #include "Gwen/Macros.h"
 #include "Gwen/Platform.h"
 
-#if !defined(_WIN32) && !defined(GWEN_ALLEGRO_PLATFORM) && !defined(__APPLE__)
-
-#include <time.h>
+#include "tinyfiledialogs.h"
 
 static Gwen::UnicodeString gs_ClipboardEmulator;
 
@@ -42,21 +36,47 @@ float Gwen::Platform::GetTimeInSeconds()
 
 bool Gwen::Platform::FileOpen( const String & Name, const String & StartPath, const String & Extension, Gwen::Event::Handler* pHandler, Event::Handler::FunctionWithInformation fnCallback )
 {
-	// No platform independent way to do this.
-	// Ideally you would open a system dialog here
-	return false;
+    const char* file = tinyfd_openFileDialog(Name.c_str(), StartPath.c_str(), 0, NULL, NULL, 0);
+    if (file != nullptr && pHandler && fnCallback)
+    {
+		Gwen::Event::Information info;
+		info.Control		= NULL;
+		info.ControlCaller	= NULL;
+		info.String			= file;
+		( pHandler->*fnCallback )( info );
+    }
+
+	return true;
 }
 
 bool Gwen::Platform::FileSave( const String & Name, const String & StartPath, const String & Extension, Gwen::Event::Handler* pHandler, Gwen::Event::Handler::FunctionWithInformation fnCallback )
 {
-	// No platform independent way to do this.
-	// Ideally you would open a system dialog here
-	return false;
+    const char* file = tinyfd_saveFileDialog(Name.c_str(), StartPath.c_str(), 0, NULL, NULL);
+    if (file != nullptr && pHandler && fnCallback)
+    {
+		Gwen::Event::Information info;
+		info.Control		= NULL;
+		info.ControlCaller	= NULL;
+		info.String			= file;
+		( pHandler->*fnCallback )( info );
+    }
+
+	return true;
 }
 
 bool Gwen::Platform::FolderOpen( const String & Name, const String & StartPath, Gwen::Event::Handler* pHandler, Event::Handler::FunctionWithInformation fnCallback )
 {
-	return false;
+    const char* file = tinyfd_selectFolderDialog(Name.c_str(), StartPath.c_str());
+    if (file != nullptr && pHandler && fnCallback)
+    {
+		Gwen::Event::Information info;
+		info.Control		= NULL;
+		info.ControlCaller	= NULL;
+		info.String			= file;
+		( pHandler->*fnCallback )( info );
+    }
+
+	return true;
 }
 
 void* Gwen::Platform::CreatePlatformWindow( int x, int y, int w, int h, const Gwen::String & strWindowTitle )
@@ -99,4 +119,5 @@ void Gwen::Platform::GetCursorPos( Gwen::Point & po )
 {
 }
 
-#endif // ndef WIN32
+
+#endif
